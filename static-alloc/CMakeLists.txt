@@ -11,6 +11,7 @@ set_target_properties(static_alloc PROPERTIES
                     VERSION ${PROJECT_VERSION}
                     PUBLIC_HEADER static_alloc.h)
 
+
 # link_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 # add_subdirectory(static-alloc)

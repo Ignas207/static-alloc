@@ -8,7 +8,7 @@ extern "C" {
 #include <stdio.h>
 #include <string.h>
 
-#define BUFF_SIZE 1024U
+#define BUFF_SIZE 10240U
 #define ALLOC_SIZE 2U
 
 typedef unsigned char uint8_t;
@@ -20,10 +20,13 @@ typedef unsigned int uint32_t;
 )
 
 uint8_t *memAlloc(uint32_t size);
-static uint16_t getSize(uint8_t *buff);
-static uint8_t *findEmptyLocation(uint8_t *buff);
 uint8_t *memRealloc(uint8_t *memPtr, uint32_t size);
 void memFree(uint8_t *memPtr);
+
+static uint16_t getSize(uint8_t *buff);
+static uint8_t *findEmptyLocation(uint8_t *buff, uint32_t size);
+static uint32_t CheckIfFree(uint8_t *buff, uint32_t end);
+static void SetBufferLenght(uint8_t *memPtr, uint16_t size);
 static uint8_t *bufferAccess(void);
 
 

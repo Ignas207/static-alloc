@@ -14,8 +14,8 @@ set_property(TARGET static-alloc PROPERTY IMPORTED_LOCATION ${CMAKE_CURRENT_SOUR
 target_link_libraries(${CMAKE_PROJECT_NAME} static-alloc)
 
 # link_directories(${CMAKE_CURRENT_SOURCE_DIR}/static_alloc)
-target_link_options(${CMAKE_PROJECT_NAME} PRIVATE
-    -Wall
+target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE
+    -Wall 
     -Wextra
     -Wpedantic
     -Wno-unused-parameter
