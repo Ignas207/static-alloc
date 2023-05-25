@@ -1,6 +1,0 @@
-D:/Programing/c/static-alloc/build/CMakeFiles/Static-alloc-test.dir
-D:/Programing/c/static-alloc/build/CMakeFiles/edit_cache.dir
-D:/Programing/c/static-alloc/build/CMakeFiles/rebuild_cache.dir
-D:/Programing/c/static-alloc/build/static-alloc/CMakeFiles/static_alloc.dir
-D:/Programing/c/static-alloc/build/static-alloc/CMakeFiles/edit_cache.dir
-D:/Programing/c/static-alloc/build/static-alloc/CMakeFiles/rebuild_cache.dir
