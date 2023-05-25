@@ -1,0 +1,3 @@
+"C:\Program Files\CMake\bin\cmake.exe" -E rm -f CMakeFiles\static_alloc.dir/objects.a
+C:\msys64\mingw64\bin\ar.exe qc CMakeFiles\static_alloc.dir/objects.a @CMakeFiles\static_alloc.dir\objects1.rsp
+C:\msys64\mingw64\bin\gcc.exe -g -shared -o libstatic_alloc.dll -Wl,--out-implib,libstatic_alloc.dll.a -Wl,--major-image-version,1,--minor-image-version,0 -Wl,--whole-archive CMakeFiles\static_alloc.dir/objects.a -Wl,--no-whole-archive @CMakeFiles\static_alloc.dir\linkLibs.rsp
