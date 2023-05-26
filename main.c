@@ -14,12 +14,12 @@ int main(void)
     printf("We are working!\n");
     // Test();
 
-    // struct Memblock memblock = {0};
+    // volatile struct Memblock memblock = {0};
     // memblock.size = 5;
     // memblock.data = memAlloc(5);
     // memset(memblock.data, 55, 5);
 
-    // uint8_t *testcast = (uint8_t*)&memblock;
+    // volatile void *testcast = (void*)&memblock;
 
     struct timeval tv1, tv2;
     // gettimeofday(&tv1, NULL);
