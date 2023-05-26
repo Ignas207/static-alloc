@@ -96,7 +96,7 @@ void Static_alloc_testings()
     gettimeofday(&tv1, NULL);
     uint8_t *test3 = memAlloc(100);
     gettimeofday(&tv2, NULL);
-    memset(test3, '9', 99);
+    memset(test3, '9', 100);
     PrintExecTime_us(tv1, tv2);
 
     gettimeofday(&tv1, NULL);

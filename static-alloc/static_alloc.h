@@ -10,7 +10,7 @@ extern "C" {
 
 #define BUFF_SIZE 1024000U
 #define HEADER_SIZE 4U
-#define DATA_SECTION_START(headerSize) ((uint8_t)(headerSize)+1)
+#define DATA_SECTION_START(headerSize) ((uint8_t)(headerSize)+2)
 #define DATA_SECTION_END 0xFFU
 
 typedef unsigned char uint8_t;
@@ -22,8 +22,8 @@ typedef unsigned int uint32_t;
  *         Need to give a pointer at the start of USER section.
  * 
  */
-#define GET_ALLOC_BUFFER_INFO_SECTION(buffer)( \
-    (uint8_t*)(buffer - *(buffer -1) -1) \
+#define GET_ALLOC_BUFFER_START(buffer)( \
+    (uint8_t*)(buffer - *(buffer -1)) \
 )
 
 #define GET_ALLOC_BUFFER_HEADER_LENGHT(buffer)( (uint8_t)(*(buffer -1)) )
@@ -54,11 +54,10 @@ static uint8_t GetBitAmount(uint32_t number);
 static uint32_t getUserSize(uint8_t *buff);
 static uint32_t getTotalSize(uint8_t *buff);
 static uint32_t getSize(uint8_t *buff, uint8_t getTotal);
-static uint8_t *findEmptyLocation(uint8_t *buff, uint32_t size, uint8_t buffStart);
+static uint8_t *findEmptyLocation(uint8_t *buff, uint32_t size);
 static uint32_t CheckIfFree(uint8_t *buff, uint32_t end);
 static uint8_t *SetBufferLenght(uint8_t *memPtr, uint32_t size);
 static uint8_t *bufferAccess(void);
-static uint8_t *FormatSection(uint8_t *memPtr, uint32_t size);
 
 #ifdef __cplusplus
 }

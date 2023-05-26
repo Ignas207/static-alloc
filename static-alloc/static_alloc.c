@@ -18,7 +18,7 @@ uint8_t *memAlloc(uint32_t size)
     if (size > BUFF_SIZE)
         return NULL;
 
-    retBuffer = findEmptyLocation(bufferAccess(), size, 1);
+    retBuffer = findEmptyLocation(bufferAccess(), size);
     if (retBuffer == NULL)
         return NULL;
 
@@ -27,30 +27,31 @@ uint8_t *memAlloc(uint32_t size)
 
 uint8_t *memRealloc(uint8_t *memPtr, uint32_t size)
 {
-    uint32_t memSize = getUserSize(memPtr - HEADER_SIZE);
+    uint8_t *tempPtr = GET_ALLOC_BUFFER_START(memPtr);
+    uint32_t memSize = getUserSize(tempPtr);
     if (size < memSize)
     {
-        SetBufferLenght(memPtr - HEADER_SIZE, size);
+        // TODO: possible data corruption if size blocks decrease!
         memset(memPtr + size, 0, memSize - size);
-        return memPtr;
+        return SetBufferLenght(tempPtr, size);
     }
 
     // Checking if we can resize the existing buffer.
     if (CheckIfFree(memPtr + memSize, size - memSize) == 0)
     {
-        SetBufferLenght(memPtr - HEADER_SIZE, size);
+        // TODO: possible data corruption if size blocks increase!
+        SetBufferLenght(tempPtr, size);
         return memPtr;
     }
 
-    uint8_t *retPtr = findEmptyLocation(bufferAccess(), size, 0);
-    if (retPtr == NULL)
+    uint8_t *allocdPtr = findEmptyLocation(bufferAccess(), size);
+    if (allocdPtr == NULL)
         return NULL;
 
-    SetBufferLenght(retPtr, size);
-    memcpy(retPtr + HEADER_SIZE, memPtr, memSize);
-    memset(memPtr - HEADER_SIZE, 0, memSize);
-    memPtr = NULL;
-    return retPtr + HEADER_SIZE;
+    uint8_t *respPtr = SetBufferLenght(allocdPtr, size);
+    memcpy(respPtr, memPtr, memSize);
+    memFree(memPtr);
+    return respPtr;
 }
 
 /**
@@ -58,7 +59,7 @@ uint8_t *memRealloc(uint8_t *memPtr, uint32_t size)
  * 
  * @param memPtr Starting location of the allocated data buffer.
  * @param size Memory size to allocate.
- * @return uint8_t* Starting point of the allocated section.
+ * @return uint8_t* Starting point of the allocated USER section.
  */
 static uint8_t *SetBufferLenght(uint8_t *memPtr, uint32_t size)
 {
@@ -91,18 +92,13 @@ static uint8_t *SetBufferLenght(uint8_t *memPtr, uint32_t size)
     return (memPtr + headerSize +2);
 }
 
-static uint8_t *FormatSection(uint8_t *memPtr, uint32_t size)
-{
-
-}
-
 static inline uint8_t *bufferAccess(void)
 {
     // static uint8_t buffer[BUFF_SIZE] = {0};
     return (uint8_t *)&buffer;
 }
 
-static uint8_t *findEmptyLocation(uint8_t *buff, uint32_t size, uint8_t buffStart)
+static uint8_t *findEmptyLocation(uint8_t *buff, uint32_t size)
 {
     uint32_t i = 0;
     uint32_t buff_size = 0;
@@ -126,15 +122,6 @@ static uint8_t *findEmptyLocation(uint8_t *buff, uint32_t size, uint8_t buffStar
     return NULL;
 }
 
-void PatternCheck(uint8_t *buff, uint32_t *counter)
-{
-    // TODO: make this!
-    for (uint32_t i = 0; i < *counter; i++)
-    {
-        /* code */
-    }
-}
-
 static uint8_t GetBitAmount(uint32_t number)
 {
     uint8_t counter = 8U;
@@ -152,7 +139,7 @@ static uint32_t CheckIfFree(uint8_t *buff, uint32_t end)
 {
     for (uint32_t j = 0; j < end; ++j)
     {
-        if (!*(buff + j) && 0)
+        if (!*(buff + j) == 0)
         {
             if (j == 0)
             {
@@ -187,7 +174,7 @@ static uint32_t getSize(uint8_t *buff, uint8_t getTotal)
 
     if (*buff && MODE_32BIT == 1)
     {
-        if (GET_BUFFER_CHECKSUM(buff, 1) == GET_HEADER_CHECKSUM(buff, MODE_32BIT))
+        if (GET_BUFFER_CHECKSUM(buff, counter) == GET_HEADER_CHECKSUM(buff, MODE_32BIT))
         {
             size += *(buff + counter) << 24U;
             counter++;
@@ -196,16 +183,17 @@ static uint32_t getSize(uint8_t *buff, uint8_t getTotal)
 
     if (*buff && MODE_24BIT == 1)
     {
-        if (GET_BUFFER_CHECKSUM(buff, 2) == GET_HEADER_CHECKSUM(buff, MODE_24BIT))
+        if (GET_BUFFER_CHECKSUM(buff, counter) == GET_HEADER_CHECKSUM(buff, MODE_24BIT))
         {
             size += *(buff + counter) << 16U;
             counter++;
         }
     }
 
-    if (*buff && MODE_16BIT == 1)
+    // TODO: see why this dosent verify with memRealloc(largeTest, 600);
+    if (*buff && MODE_16BIT == counter)
     {
-        if (GET_BUFFER_CHECKSUM(buff, 3) == GET_HEADER_CHECKSUM(buff, MODE_16BIT))
+        if (GET_BUFFER_CHECKSUM(buff, counter) == GET_HEADER_CHECKSUM(buff, MODE_16BIT))
         {
             size += *(buff + counter) << 8U;
             counter++;
@@ -214,7 +202,7 @@ static uint32_t getSize(uint8_t *buff, uint8_t getTotal)
 
     if (*buff && MODE_8BIT == 1)
     {
-        if (GET_BUFFER_CHECKSUM(buff, 4) == GET_HEADER_CHECKSUM(buff, MODE_8BIT))
+        if (GET_BUFFER_CHECKSUM(buff, counter) == GET_HEADER_CHECKSUM(buff, MODE_8BIT))
         {
             size += *(buff + counter);
         }
@@ -234,7 +222,7 @@ void memFree(uint8_t *memPtr)
 {
     if (memPtr == NULL)
         return;
-    uint8_t *tempPtr = GET_ALLOC_BUFFER_INFO_SECTION(memPtr);
+    uint8_t *tempPtr = GET_ALLOC_BUFFER_START(memPtr);
     memset(tempPtr, 0, getTotalSize(tempPtr));
     memPtr = NULL;
 }
