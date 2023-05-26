@@ -23,15 +23,15 @@ int main(void)
 
     struct timeval tv1, tv2;
     // gettimeofday(&tv1, NULL);
-    // Static_alloc_testings();
+    Static_alloc_testings();
     // gettimeofday(&tv2, NULL);
 
-    uint32_t testedValues[] = {10, 100, 1000, 10000};
-    for (size_t i = 0; i < 4; i++)
-    {
-        Static_alloc_test(testedValues[i]);
-        stdAlloc_test(testedValues[i]);
-    }
+    // uint32_t testedValues[] = {10, 100, 1000, 10000, 100000, 1000000};
+    // for (size_t i = 0; i < 6; i++)
+    // {
+    //     Static_alloc_test(testedValues[i]);
+    //     stdAlloc_test(testedValues[i]);
+    // }
     
 
     // printf ("Total time = %f ms\n",
@@ -96,11 +96,11 @@ void Static_alloc_testings()
     gettimeofday(&tv1, NULL);
     uint8_t *test3 = memAlloc(100);
     gettimeofday(&tv2, NULL);
-    memset(test3, 3, 99);
+    memset(test3, 0xFF, 99);
     PrintExecTime_us(tv1, tv2);
 
     gettimeofday(&tv1, NULL);
-    uint8_t *test1_resize = memRealloc(testMem, 80);
+    uint8_t *test1_resize = memRealloc(testMem, 90);
     gettimeofday(&tv2, NULL);
     PrintExecTime_us(tv1, tv2);
     if(test1_resize != NULL)
@@ -110,6 +110,7 @@ void Static_alloc_testings()
         printf("Our buffer: %s\n", test1_resize);
     }
 
+    memFree(test1_resize);
 
     printf("This is a large alloc 512B: ");
     uint8_t *largeTest = NULL;
@@ -131,9 +132,9 @@ void Static_alloc_testings()
     // memFree()
 
 
-    memFree(testMem);
-    memFree(test2);
-    memFree(test3);
+    // memFree(testMem);
+    // memFree(test2);
+    // memFree(test3);
 }
 
 void PrintExecTime_us(struct timeval tv1, struct timeval tv2)
