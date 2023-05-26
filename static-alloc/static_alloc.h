@@ -23,11 +23,12 @@ typedef unsigned int uint32_t;
  * 
  */
 #define GET_ALLOC_BUFFER_INFO_SECTION(buffer)( \
-    (uint8_t*)(buffer - *(buffer -1)) \
+    (uint8_t*)(buffer - *(buffer -1) -1) \
 )
 
 #define GET_ALLOC_BUFFER_HEADER_LENGHT(buffer)( (uint8_t)(*(buffer -1)) )
 
+#define GET_ALLOC_BUFFER_HEADER_LENGHT_START(buffer)( (uint8_t)(*(buffer -1)) )
 
 #define GET_BUFFER_CHECKSUM(buff, count) ( \
     (uint8_t)(*(buff + count) & 0) \
@@ -52,7 +53,8 @@ void memFree(uint8_t *memPtr);
 static uint8_t GetBitAmount(uint32_t number);
 static uint32_t getUserSize(uint8_t *buff);
 static uint32_t getTotalSize(uint8_t *buff);
-static uint8_t *findEmptyLocation(uint8_t *buff, uint32_t size);
+static uint32_t getSize(uint8_t *buff, uint8_t getTotal);
+static uint8_t *findEmptyLocation(uint8_t *buff, uint32_t size, uint8_t buffStart);
 static uint32_t CheckIfFree(uint8_t *buff, uint32_t end);
 static uint8_t *SetBufferLenght(uint8_t *memPtr, uint32_t size);
 static uint8_t *bufferAccess(void);

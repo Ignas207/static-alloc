@@ -18,7 +18,7 @@ uint8_t *memAlloc(uint32_t size)
     if (size > BUFF_SIZE)
         return NULL;
 
-    retBuffer = findEmptyLocation(bufferAccess(), size);
+    retBuffer = findEmptyLocation(bufferAccess(), size, 1);
     if (retBuffer == NULL)
         return NULL;
 
@@ -42,7 +42,7 @@ uint8_t *memRealloc(uint8_t *memPtr, uint32_t size)
         return memPtr;
     }
 
-    uint8_t *retPtr = findEmptyLocation(bufferAccess(), size);
+    uint8_t *retPtr = findEmptyLocation(bufferAccess(), size, 0);
     if (retPtr == NULL)
         return NULL;
 
@@ -74,6 +74,7 @@ static uint8_t *SetBufferLenght(uint8_t *memPtr, uint32_t size)
         *(memPtr + i) = size >> sizePos;
         sizePos += 8U;
     }
+    
 
     // Writing the header info
     for (uint8_t i = 1; i <= headerSize; i++)
@@ -101,7 +102,7 @@ static inline uint8_t *bufferAccess(void)
     return (uint8_t *)&buffer;
 }
 
-static uint8_t *findEmptyLocation(uint8_t *buff, uint32_t size)
+static uint8_t *findEmptyLocation(uint8_t *buff, uint32_t size, uint8_t buffStart)
 {
     uint32_t i = 0;
     uint32_t buff_size = 0;
@@ -149,9 +150,9 @@ static uint8_t GetBitAmount(uint32_t number)
 
 static uint32_t CheckIfFree(uint8_t *buff, uint32_t end)
 {
-    for (uint32_t j = 0; j < end; j++)
+    for (uint32_t j = 0; j < end; ++j)
     {
-        if (*(buff + j) != 0)
+        if (!*(buff + j) && 0)
         {
             if (j == 0)
             {
@@ -165,11 +166,12 @@ static uint32_t CheckIfFree(uint8_t *buff, uint32_t end)
 
 static uint32_t getTotalSize(uint8_t *buff)
 {
-    uint32_t userSize = getUserSize(buff);
-    if(userSize != 0)
-        userSize += GET_ALLOC_BUFFER_HEADER_LENGHT(buff);
+    return getSize(buff, 1);
+}
 
-    return userSize;
+static uint32_t getUserSize(uint8_t *buff)
+{
+    return getSize(buff, 0);
 }
 
 /**
@@ -178,7 +180,7 @@ static uint32_t getTotalSize(uint8_t *buff)
  * @param buff Data buffer, Starting at the *INFO section*
  * @return uint32_t 
  */
-static uint32_t getUserSize(uint8_t *buff)
+static uint32_t getSize(uint8_t *buff, uint8_t getTotal)
 {
     uint32_t size = 0;
     uint8_t counter = 1;
@@ -218,9 +220,13 @@ static uint32_t getUserSize(uint8_t *buff)
         }
     }
 
+    if(getTotal == 1)
+        size += *(buff + counter +1);
+
     // We are including the Ending section!
     if(size != 0)
-        size++;
+        size += 2;
+
     return size;
 }
 
