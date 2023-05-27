@@ -26,6 +26,12 @@ int main(void)
     Static_alloc_testings();
     // gettimeofday(&tv2, NULL);
 
+    // volatile double *testing = (double*)memAlloc(sizeof(double));
+
+    // *testing = (double)(22.0 / 7.0);
+
+    // printf("Pi approximation: %.16f\n", *testing);
+
     // uint32_t testedValues[] = {10, 100, 1000, 10000, 100000, 1000000};
     // for (size_t i = 0; i < 6; i++)
     // {

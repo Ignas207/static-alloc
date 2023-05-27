@@ -80,7 +80,7 @@ static uint8_t *SetBufferLenght(uint8_t *memPtr, uint32_t size)
     // Writing the header info
     for (uint8_t i = 1; i <= headerSize; i++)
     {
-        *(memPtr) += (*(memPtr + i) & 0) >> (checksumPos);
+        *(memPtr) += (*(memPtr + i) & 1) >> (checksumPos);
         *(memPtr) += (1 << enabledPos);
         checksumPos -= 2U;
         enabledPos -= 2U;
@@ -162,7 +162,7 @@ static uint32_t getUserSize(uint8_t *buff)
 }
 
 /**
- * @brief Get the size of the allocated USER memory.
+ * @brief Get the size of the allocated memory.
  * 
  * @param buff Data buffer, Starting at the *INFO section*
  * @return uint32_t 
@@ -172,7 +172,7 @@ static uint32_t getSize(uint8_t *buff, uint8_t getTotal)
     uint32_t size = 0;
     uint8_t counter = 1;
 
-    if (*buff && MODE_32BIT == 1)
+    if (IS_ALLOC_MODE(buff, MODE_32BIT))
     {
         if (GET_BUFFER_CHECKSUM(buff, counter) == GET_HEADER_CHECKSUM(buff, MODE_32BIT))
         {
@@ -181,7 +181,7 @@ static uint32_t getSize(uint8_t *buff, uint8_t getTotal)
         }
     }
 
-    if (*buff && MODE_24BIT == 1)
+    if (IS_ALLOC_MODE(buff, MODE_24BIT))
     {
         if (GET_BUFFER_CHECKSUM(buff, counter) == GET_HEADER_CHECKSUM(buff, MODE_24BIT))
         {
@@ -190,8 +190,7 @@ static uint32_t getSize(uint8_t *buff, uint8_t getTotal)
         }
     }
 
-    // TODO: see why this dosent verify with memRealloc(largeTest, 600);
-    if (*buff && MODE_16BIT == counter)
+    if (IS_ALLOC_MODE(buff, MODE_16BIT))
     {
         if (GET_BUFFER_CHECKSUM(buff, counter) == GET_HEADER_CHECKSUM(buff, MODE_16BIT))
         {
@@ -200,7 +199,7 @@ static uint32_t getSize(uint8_t *buff, uint8_t getTotal)
         }
     }
 
-    if (*buff && MODE_8BIT == 1)
+    if (IS_ALLOC_MODE(buff, MODE_8BIT))
     {
         if (GET_BUFFER_CHECKSUM(buff, counter) == GET_HEADER_CHECKSUM(buff, MODE_8BIT))
         {

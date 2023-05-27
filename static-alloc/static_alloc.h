@@ -26,12 +26,14 @@ typedef unsigned int uint32_t;
     (uint8_t*)(buffer - *(buffer -1)) \
 )
 
+#define IS_ALLOC_MODE(buffer, mode)( (uint8_t)((*buff & mode) && 1))
+
 #define GET_ALLOC_BUFFER_HEADER_LENGHT(buffer)( (uint8_t)(*(buffer -1)) )
 
 #define GET_ALLOC_BUFFER_HEADER_LENGHT_START(buffer)( (uint8_t)(*(buffer -1)) )
 
 #define GET_BUFFER_CHECKSUM(buff, count) ( \
-    (uint8_t)(*(buff + count) & 0) \
+    (uint8_t)(*(buff + count) & 1) \
 )
 
 #define GET_HEADER_CHECKSUM(checksum, type) ( \
