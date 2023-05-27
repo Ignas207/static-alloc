@@ -5,10 +5,10 @@ static uint8_t buffer[BUFF_SIZE] = {0};
 /**
  * @brief Allocates requested amount of memory from the stack.
  * 
- * @param size 
- * @return uint8_t* pointer to memory region, can be NULL if alloc failled!
+ * @param size memory size to allocate.
+ * @return uint8_t* pointer to memory region, can be NULL if alloc failed!
  */
-uint8_t *memAlloc(uint32_t size)
+uint8_t *memAlloc(const uint32_t size)
 {
     uint8_t *retBuffer = NULL;
 
@@ -25,10 +25,10 @@ uint8_t *memAlloc(uint32_t size)
     return SetBufferLenght(retBuffer, size);
 }
 
-uint8_t *memRealloc(uint8_t *memPtr, uint32_t size)
+uint8_t *memRealloc(uint8_t *memPtr, const uint32_t size)
 {
     uint8_t *tempPtr = GET_ALLOC_BUFFER_START(memPtr);
-    uint32_t memSize = getUserSize(tempPtr);
+    const uint32_t memSize = getUserSize(tempPtr);
     if (size < memSize)
     {
         // TODO: possible data corruption if size blocks decrease!
@@ -61,9 +61,9 @@ uint8_t *memRealloc(uint8_t *memPtr, uint32_t size)
  * @param size Memory size to allocate.
  * @return uint8_t* Starting point of the allocated USER section.
  */
-static uint8_t *SetBufferLenght(uint8_t *memPtr, uint32_t size)
+static uint8_t *SetBufferLenght(uint8_t *const memPtr, const uint32_t size)
 {
-    uint8_t headerSize = GetBitAmount(size);
+	const uint8_t headerSize = GetBitAmount(size);
     uint8_t checksumPos = headerSize*2 - 1;
     uint8_t enabledPos = checksumPos -1;
     uint8_t sizePos = 0U;
@@ -98,7 +98,14 @@ static inline uint8_t *bufferAccess(void)
     return (uint8_t *)&buffer;
 }
 
-static uint8_t *findEmptyLocation(uint8_t *buff, uint32_t size)
+/**
+ * @brief Finds an empty location in the provided buffer and returns its pointer.
+ * 
+ * @param buff 
+ * @param size 
+ * @return uint8_t* 
+ */
+static uint8_t *findEmptyLocation(const uint8_t *const buff, const uint32_t size)
 {
     uint32_t i = 0;
     uint32_t buff_size = 0;
@@ -114,8 +121,7 @@ static uint8_t *findEmptyLocation(uint8_t *buff, uint32_t size)
             temp = CheckIfFree(buff + i, i + size);
             if (temp == 0)
                 return (buff + i);
-            else
-                buff_size = temp;
+            buff_size = temp;
         }
         i += buff_size;
     }
@@ -124,22 +130,28 @@ static uint8_t *findEmptyLocation(uint8_t *buff, uint32_t size)
 
 static uint8_t GetBitAmount(uint32_t number)
 {
-    uint8_t counter = 8U;
-    uint8_t shifted = 1U;
-    while (number >> counter > 0)
+    uint8_t shifted = 0;
+    while (number > 0)
     {
-        number = number >> counter;
-        counter += 8U;
+        number = number >> 8U;
         shifted++;
     }
     return shifted;
 }
 
-static uint32_t CheckIfFree(uint8_t *buff, uint32_t end)
+/**
+ * @brief Check if the memory region is free.
+ * 
+ * @param buff buffer pointer to start from.
+ * @param end bytes to check.
+ * @return uint32_t 1: next byte is occupied; 0: region is free; other result
+ * indicates a memory region at this point.
+ */
+static uint32_t CheckIfFree(const uint8_t *const buff, const uint32_t end)
 {
     for (uint32_t j = 0; j < end; ++j)
     {
-        if (!*(buff + j) == 0)
+        if ((*(buff + j) && 1))
         {
             if (j == 0)
             {
@@ -151,12 +163,24 @@ static uint32_t CheckIfFree(uint8_t *buff, uint32_t end)
     return 0U;
 }
 
-static uint32_t getTotalSize(uint8_t *buff)
+/**
+ * @brief Get the TOTAL Size of the allocated memory region.
+ * 
+ * @param buff 
+ * @return uint32_t 
+ */
+static uint32_t getTotalSize(const uint8_t *const buff)
 {
     return getSize(buff, 1);
 }
 
-static uint32_t getUserSize(uint8_t *buff)
+/**
+ * @brief Get the size of the ALLOCATED memory region.
+ * 
+ * @param buff 
+ * @return uint32_t 
+ */
+static uint32_t getUserSize(const uint8_t *const buff)
 {
     return getSize(buff, 0);
 }
@@ -164,10 +188,11 @@ static uint32_t getUserSize(uint8_t *buff)
 /**
  * @brief Get the size of the allocated memory.
  * 
- * @param buff Data buffer, Starting at the *INFO section*
- * @return uint32_t 
+ * @param buff Data buffer, needs to point at the beginning!
+ * @param getTotal if 1, then will include the header lenght.
+ * @return uint32_t size of allocated memory region.
  */
-static uint32_t getSize(uint8_t *buff, uint8_t getTotal)
+static uint32_t getSize(const uint8_t *const buff, const uint8_t getTotal)
 {
     uint32_t size = 0;
     uint8_t counter = 1;
@@ -212,11 +237,16 @@ static uint32_t getSize(uint8_t *buff, uint8_t getTotal)
 
     // We are including the Ending section!
     if(size != 0)
-        size += 2;
+        size += 1;
 
     return size;
 }
 
+/**
+ * @brief Frees the allocated memory region.
+ * 
+ * @param memPtr 
+ */
 void memFree(uint8_t *memPtr)
 {
     if (memPtr == NULL)

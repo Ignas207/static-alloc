@@ -8,10 +8,14 @@ extern "C" {
 #include <stdio.h>
 #include <string.h>
 
-#define BUFF_SIZE 1024000U
-#define HEADER_SIZE 4U
+enum
+{
+	BUFF_SIZE = 20240000U,
+	HEADER_SIZE = 4U,
+	DATA_SECTION_END = 0xFFU
+};
+
 #define DATA_SECTION_START(headerSize) ((uint8_t)(headerSize)+2)
-#define DATA_SECTION_END 0xFFU
 
 typedef unsigned char uint8_t;
 typedef unsigned short uint16_t;
@@ -53,12 +57,12 @@ uint8_t *memRealloc(uint8_t *memPtr, uint32_t size);
 void memFree(uint8_t *memPtr);
 
 static uint8_t GetBitAmount(uint32_t number);
-static uint32_t getUserSize(uint8_t *buff);
-static uint32_t getTotalSize(uint8_t *buff);
-static uint32_t getSize(uint8_t *buff, uint8_t getTotal);
-static uint8_t *findEmptyLocation(uint8_t *buff, uint32_t size);
-static uint32_t CheckIfFree(uint8_t *buff, uint32_t end);
-static uint8_t *SetBufferLenght(uint8_t *memPtr, uint32_t size);
+static uint32_t getUserSize(const uint8_t *const buff);
+static uint32_t getTotalSize(const uint8_t *const buff);
+static uint32_t getSize(const uint8_t *const buff, const uint8_t getTotal);
+static uint8_t *findEmptyLocation(const uint8_t *const buff, const uint32_t size);
+static uint32_t CheckIfFree(const uint8_t *const buff, const uint32_t end);
+static uint8_t *SetBufferLenght(uint8_t *const memPtr, const uint32_t size);
 static uint8_t *bufferAccess(void);
 
 #ifdef __cplusplus
