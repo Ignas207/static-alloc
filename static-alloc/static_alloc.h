@@ -60,7 +60,7 @@ static uint8_t GetBitAmount(uint32_t number);
 static uint32_t getUserSize(const uint8_t *const buff);
 static uint32_t getTotalSize(const uint8_t *const buff);
 static uint32_t getSize(const uint8_t *const buff, const uint8_t getTotal);
-static uint8_t *findEmptyLocation(const uint8_t *const buff, const uint32_t size);
+static uint8_t *findEmptyLocation(const uint8_t *const buff, uint32_t size);
 static uint32_t CheckIfFree(const uint8_t *const buff, const uint32_t end);
 static uint8_t *SetBufferLenght(uint8_t *const memPtr, const uint32_t size);
 static uint8_t *bufferAccess(void);

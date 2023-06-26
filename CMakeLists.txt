@@ -18,11 +18,12 @@ target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE
     -Wall 
     -Wextra
     -Wpedantic
+    -fanalyzer
     -Wno-unused-parameter
     -fshort-enums
     -finline-functions
-    -Og -g3 -ggdb
-    # -O2 -Os -g3 -ggdb
+    # -Og -g3 -ggdb
+    -O3
 )
 
 target_link_options(${CMAKE_PROJECT_NAME} PRIVATE

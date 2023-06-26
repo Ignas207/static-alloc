@@ -167,6 +167,7 @@ void AllocComparison(const uint32_t size)
 
     printf("Stdlib malloc -> ");
     AllocTest(size, malloc, free);
+    puts("");
 }
 
 void AllocTest(const uint32_t size,
@@ -178,7 +179,7 @@ void AllocTest(const uint32_t size,
     gettimeofday(&tv1, NULL);
     test = (uint8_t *)allocFunction(size);
     gettimeofday(&tv2, NULL);
-    printf("Time spend allocating %d Bytes: ", size);
+    printf("0x%p Time spend allocating %d Bytes: ", test + size, size);
     PrintExecTime_us(tv1, tv2);
     freeFunction((void *)test);
 }
